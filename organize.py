@@ -37,7 +37,7 @@ archive_root = '/mnt/disk-2/bib-archive/'
 
 archive_path = archive_root + extract_descriptor(torrent_file_path)
 
-
+print '********************'
 print 'Considering', torrent_file_path
 
 
@@ -52,12 +52,17 @@ torrent_dict = decode(torrent_file_path)
 
 print 'Name:', torrent_dict['info']['name']
 
+if 'length' not in torrent_dict['info']:
+    # todo: fix
+    print 'Torrents with more than one file are not yet supported.'
+    sys.exit()
 
-potential_files = [x for x in glob.glob(search_glob) if os.path.getsize(
-    x) == torrent_dict['info']['length']]
+
+potential_files = [x for x in glob.glob(search_glob) if abs(os.path.getsize(
+    x) - torrent_dict['info']['length']) < 99]
 
 num_matches = len(potential_files)
-print 'Found %d potential file%s.' % (num_matches, 's' if num_matches > 1 else '')
+print 'Found %d potential file%s.' % (num_matches, 's' if num_matches != 1 else '')
 
 print '===================='
 
