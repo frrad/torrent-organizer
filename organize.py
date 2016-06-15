@@ -98,7 +98,7 @@ def find_potential_files(path_glob, file_size, threshold=0):
 
 
 torrent_file_path = os.path.abspath(sys.argv[1])
-search_glob = '/mnt/disk-2/bib-backup/*.epub'
+search_glob = '/mnt/disk-2/bib-backup/*'
 multi_glob = '/mnt/disk-2/bib-backup/*/*'
 archive_root = '/mnt/disk-2/bib-archive/'
 
@@ -115,8 +115,11 @@ if os.path.isdir(archive_path):
     sys.exit()
 
 
-torrent_dict = decode(torrent_file_path)
-
+try:
+    torrent_dict = decode(torrent_file_path)
+except bencode.BTL.BTFailure:
+    print 'Failed to parse file %s' % torrent_file_path
+    sys.exit()
 
 print 'Name:', torrent_dict['info']['name']
 
@@ -126,7 +129,7 @@ if 'length' not in torrent_dict['info']:
 
 
 potential_files = find_potential_files(
-    search_glob, torrent_dict['info']['length'], 99)
+    search_glob, torrent_dict['info']['length'])
 
 
 num_matches = len(potential_files)
